@@ -32,11 +32,11 @@ pipeline {
 
         stage('Plan') {
             steps {
-                bat 'pwd;cd terraform/aws-instance-first-script ; terraform init -input=false'
-                bat 'pwd;cd terraform/aws-instance-first-script ; terraform workspace new ${environment}'
-                bat 'pwd;cd terraform/aws-instance-first-script ; terraform workspace select ${environment}'
-                bat "pwd;cd terraform/aws-instance-first-script ;terraform plan -input=false -out tfplan "
-                bat 'pwd;cd terraform/aws-instance-first-script ;terraform show -no-color tfplan > tfplan.txt'
+                bat 'terraform init -input=false'
+                bat 'terraform workspace new ${environment}'
+                bat 'terraform workspace select ${environment}'
+                bat "terraform plan -input=false -out tfplan "
+                bat 'terraform show -no-color tfplan > tfplan.txt'
             }
         }
         stage('Approval') {
@@ -48,7 +48,7 @@ pipeline {
 
            steps {
                script {
-                    def plan = readFile 'terraform/aws-instance-first-script/tfplan.txt'
+                    def plan = readFile 'terraform_aws_jenkins/tfplan.txt'
                     input message: "Do you want to apply the plan?",
                     parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                }
